@@ -28,7 +28,7 @@
             Lines.RemoveAll( l => l.Product.ProductId == product.ProductId );
     
         public decimal ComputeTotalValue() =>
-          (decimal)  Lines.Sum( e => e.Product?.ProductPrice * e.Quantity );
+          (decimal)  Lines.Sum( e => e.Product?.ProductPrice*(1 - e.Product?.ProductDiscount) * e.Quantity );
     
         public void Clear() => Lines.Clear();
 
