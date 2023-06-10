@@ -7,23 +7,48 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Eshop.Data;
 using Eshop.Models;
+using Eshop.Models.ViewModels;
 
 namespace Eshop.Controllers
 {
     public class ProductsController : Controller
     {
         private readonly ApplicationDbContext _context;
-
+        public int PageSize = 9;
         public ProductsController(ApplicationDbContext context)
         {
             _context = context;
         }
 
         // GET: Products
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int productPage=1)
         {
-            var applicationDbContext = _context.Products.Include(p => p.Category).Include(p => p.Color).Include(p => p.Size);
-            return View(await applicationDbContext.ToListAsync());
+            // var applicationDbContext = _context.Products.Include(p => p.Category).Include(p => p.Color).Include(p => p.Size)
+            //      .Skip((productPage-1)*PageSize).Take(PageSize);
+
+
+            return View(
+                 new ProductListViewModel
+                 {
+                     Products = _context.Products
+                     .Skip((productPage - 1) * PageSize)
+                     .Take(PageSize),
+                     PagingInfo = new PagingInfo
+                     {   
+                         ItemsPerPage = PageSize,
+                         CurrentPage = productPage,
+                         TotalItems = _context.Products.Count()
+
+                     }
+                 }
+
+                ) ;
+        }
+
+        public async Task<IActionResult> ProductByCategory(int categoryId)
+        {
+            var applicationDbContext = _context.Products.Where(p => p.CategoryId==categoryId).Include(p => p.Category).Include(p => p.Color).Include(p => p.Size);
+            return View("Index",await applicationDbContext.ToListAsync());
         }
 
         // GET: Products/Details/5
