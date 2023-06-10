@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Eshop.Data;
 using Eshop.Models;
 using Eshop.Models.ViewModels;
+using static Microsoft.Extensions.Logging.EventSource.LoggingEventSource;
 
 namespace Eshop.Controllers
 {
@@ -44,11 +45,55 @@ namespace Eshop.Controllers
 
                 ) ;
         }
-
-        public async Task<IActionResult> ProductByCategory(int categoryId)
+        [HttpPost]
+        public async Task<IActionResult> Search(string keyword, int productPage=1)
         {
-            var applicationDbContext = _context.Products.Where(p => p.CategoryId==categoryId).Include(p => p.Category).Include(p => p.Color).Include(p => p.Size);
-            return View("Index",await applicationDbContext.ToListAsync());
+            // var applicationDbContext = _context.Products.Include(p => p.Category).Include(p => p.Color).Include(p => p.Size)
+            //      .Skip((productPage-1)*PageSize).Take(PageSize);
+
+
+            return View("Index",
+                 new ProductListViewModel
+                 {
+                     Products = _context.Products
+                     .Where(p => p.ProductName.Contains(keyword))
+                     .Skip((productPage - 1) * PageSize)
+                     .Take(PageSize),
+                     PagingInfo = new PagingInfo
+                     {
+                         ItemsPerPage = PageSize,
+                         CurrentPage = productPage,
+                         TotalItems = _context.Products.Count()
+
+                     }
+                 }
+
+                );
+        }
+
+        //public async Task<IActionResult> ProductByCategory(int categoryId)
+        //{
+        //    var applicationDbContext = _context.Products.Where(p => p.CategoryId==categoryId).Include(p => p.Category).Include(p => p.Color).Include(p => p.Size);
+        //    return View("Index",await applicationDbContext.ToListAsync());
+        //}
+
+        public async Task<IActionResult> ProductByCategory(int categoryId, int productPage = 1)
+        {
+           
+            return View("Index", new ProductListViewModel
+            {
+                Products = _context.Products
+                     .Where(p => p.CategoryId == categoryId)
+                     .Skip((productPage - 1) * PageSize)
+                     .Take(PageSize),
+                PagingInfo = new PagingInfo
+                {
+                    ItemsPerPage = PageSize,
+                    CurrentPage = productPage,
+                    TotalItems = _context.Products.Count()
+
+                }
+            });
         }
 
         // GET: Products/Details/5
