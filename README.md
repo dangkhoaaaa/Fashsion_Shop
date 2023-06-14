@@ -1,4 +1,4 @@
-# Fashing_Shop
+# Fashing_Shop (.NET CORE)
 Fashion shops sell all kinds of fashion items such as clothes, shoes, watches, etc. Helping users easily search and access the hottest fashions in the market.
 <a href="https://imgur.com/ypj6Yge"><img src="https://i.imgur.com/ypj6Yge.png" title="source: imgur.com" /></a>
 # Function Basic
